@@ -1152,9 +1152,7 @@
             </div>
         </div>
         <div class="pref-block-noborder form-wrapper-noborder">
-            %%[
-                IF @error THEN
-            ]%%
+        
             <div class="pref-block-noborder form-wrapper-noborder">
                 <p class="slds-text-heading_small" style="font-size: 1.45rem">
                     An error has occurred when updating your preferences, please contact Cumulus customer support to complete your request.
@@ -1162,9 +1160,6 @@
                 </p>
             </div>
 
-            %%[
-                ELSE
-            ]%%
 
             <div class="pref-block-noborder form-wrapper-noborder">
                 <p class="slds-text-heading_small" style="font-size: 1.45rem">
@@ -1327,9 +1322,7 @@
                     <button class="form-button" id="unsuball" name="unsuball" type="submit" value="true" style="background-color: #307FCE">Unsubscribe from All</button>
                 </div>
             </form>
-            %%[
-                ENDIF
-            ]%%
+    
         </div>
 
         <script>
