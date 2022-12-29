@@ -1,8 +1,9 @@
-<!-- https://mcp76yxhtx84crlrk45yhv6lcsby.pub.sfmc-content.com/h3cqwj0d1yt -->
+<!-- https://mcp76yxhtx84crlrk45yhv6lcsby.pub.sfmc-content.com/hso1bllkjiy -->
 <!DOCTYPE html>
 <html>
 
     <head>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <style>
             /*********Vars***************/
         :root {
@@ -47,19 +48,19 @@
         }
 
         .header>.logo {
-            max-width: 200px;
+            max-width: 400px;
         }
 
         .logo img {
-            max-width: 200px;
+            max-width: 400px;
         }
 
         .header>.logo {
-            max-height: 100px;
+            max-height: 200px;
         }
 
         .logo img {
-            max-height: 100px;
+            max-height: 200px;
         }
 
         .pref_type_icon {
@@ -1083,89 +1084,62 @@
 
     <body>
         <div style="display:none;">
-            %%[
-             /*
-              THIS PREFERENCE PAGE WILL BE REACHED VIA CLICKING ON A LINK IN THE EMAIL FOOTER
-              THE VARIABLES WILL BE ENCRYPTED IN THE LINK FROM THE EMAIL
-              IF THE FOLLOWING TWO VARIABLES ARE EMPTY, IT INDICATES THAT THE VISITOR DID NOT COME
-              TO THE PREFERENCE CENTER THROUGH AN EMAIL AND WE SHOULD DISPLAY A MESSAGE
-             */
-             SET @SubscriberKey = [_subscriberkey]
-             SET @EmailAddress = [emailaddr]
+        %%[
+            /*
+                THIS PREFERENCE PAGE WILL BE REACHED VIA CLICKING ON A LINK IN THE EMAIL FOOTER
+                THE VARIABLES WILL BE ENCRYPTED IN THE LINK FROM THE EMAIL
+                IF THE FOLLOWING TWO VARIABLES ARE EMPTY, IT INDICATES THAT THE VISITOR DID NOT COME
+                TO THE PREFERENCE CENTER THROUGH AN EMAIL AND WE SHOULD DISPLAY A MESSAGE
+            */
+            SET @SubscriberKey = [_subscriberkey]
+            SET @EmailAddress = [emailaddr]
 
-                /*SET @SubscriberKey = "100000213"
-                SET @EmailAddress = "mbolton.10000.0213@hotmail.marketingclouddemo.com"*/
+            /*SET @SubscriberKey = "100000213"
+            SET @EmailAddress = "mbolton.10000.0213@hotmail.marketingclouddemo.com"*/
 
-                IF EMPTY(@SubscriberKey) OR EMPTY(@EmailAddress) THEN
+            IF EMPTY(@SubscriberKey) OR EMPTY(@EmailAddress) THEN
 
-                    SET @error = true
+                SET @error = true
 
-                ELSE
+            ELSE
+                /*
+                THE CLOUDPAGEURL WILL BE USED TO INDICATE THE PAGE THAT THE CONTENT WILL POST TO AFTER THE SUBSCRIBER SUBMITS
+                THE FORM
+                */
 
-                    SET @FirstName = RequestParameter('FirstName')
-                    SET @LastName = RequestParameter('LastName')
-                    SET @PhoneNumber = RequestParameter('PhoneNumber')
-                    SET @StreetAddress = RequestParameter('StreetAddress')
-                    SET @City = RequestParameter('City')
-                    SET @State = RequestParameter('State')
-                    SET @ZipCode = RequestParameter('ZipCode')
+                SET @thankYouLink = CloudPagesURL(44375)
+                SET @unsubAll = CloudPagesURL(44609)
 
-                 /*
-                  THE CLOUDPAGEURL WILL BE USED TO INDICATE THE PAGE THAT THE CONTENT WILL POST TO AFTER THE SUBSCRIBER SUBMITS
-                  THE FORM
-                 */
+                IF Length(@EmailAddress) > 0 THEN
+                    /*The following code will lookup an existing contact automatically if you wire this up to a "complete your profile" email as part of your customer journey */
+                    SET @data = LookupRows("Cumulus Preference Center","EmailAddress", @EmailAddress, 'SubscriberKey', @SubscriberKey)
+                    SET @rowCount = RowCount(@data)
+                    IF @rowCount > 0 THEN
+                        SET @row = Row(@data, 1)
+                        SET @FirstName = Field(@row, "FirstName")
+                        SET @LastName = Field(@row, "LastName")
+                        SET @PhoneNumber = Field(@row, "PhoneNumber")
+                        SET @StreetAddress = Field(@row, "StreetAddress")
+                        SET @City = Field(@row, "City")
+                        SET @State = Field(@row, "State")
+                        SET @ZipCode = Field(@row, "ZipCode")
 
-                 SET @preferenceCenterLink = CloudPagesURL(44594)
+                        SET @WeeklyNews = Field(@row, "WeeklyNews")
+                        SET @InvestmentRecs = Field(@row, "InvestmentRecs")
 
-                    /*  THE FOLLOWING WILL CHECK THE SUBSCRIBERS CURRENT MARKETING CLOUD STATUS.
-                        IT WILL ONLY UPDATE TO ACTIVE IF THE CURRENT STATUS DOESN'T MATCH
-                        THE STATUS THAT WAS SELECTED
-
-                        NOTE: IF THE SUBSCRIBER IS CURRENTLY UNSUBSCRIBED IN THE MARKETING CLOUD AND THEY SELECT
-                        AN OPTION ON THE PREFERENCE PAGE, THIS PROCESS WILL SET THE SUBSCRIBER TO ACTIVE */
-
-                    SET @Status = 'Active'
-                    SET @WeeklyNews = IIF(EMPTY(RequestParameter('WeeklyNews')), 0, 1)
-                    SET @InvestmentRecs = IIF(EMPTY(RequestParameter('InvestmentRecs')), 0, 1)
-                    SET @CashBack = IIF(EMPTY(RequestParameter('CashBack')), 0, 1)
-                    SET @Savings = IIF(EMPTY(RequestParameter('Savings')), 0, 1)
-                    SET @Investments = IIF(EMPTY(RequestParameter('Investments')), 0, 1)
-                    SET @Retirement = IIF(EMPTY(RequestParameter('Retirement')), 0, 1)
-
-                    SET @results = UpsertData('Cumulus Preference Center', 2, 'EmailAddress', @EmailAddress, 'SubscriberKey', @SubscriberKey, 'FirstName', @FirstName, 'LastName', @LastName, 'PhoneNumber', @PhoneNumber, 'StreetAddress', @StreetAddress, 'City', @City, 'State', @State, 'ZipCode', @ZipCode, 'WeeklyNews', @WeeklyNews, 'InvestmentRecs', @InvestmentRecs, 'CashBack', @CashBack, 'Savings', @Savings, 'Investments', @Investments, 'Retirement', @Retirement, 'ModifiedDate',Now())
-
-                    SET @rrObj = CreateObject("RetrieveRequest")
-                    SetObjectProperty(@rrObj, "ObjectType", "Subscriber")
-                    AddObjectArrayItem(@rrObj,"Properties","SubscriberKey")
-                    AddObjectArrayItem(@rrObj,"Properties","EmailAddress")
-                    AddObjectArrayItem(@rrObj,"Properties","Status")
-
-                    SET @cObj = CreateObject("SimpleFilterPart")
-                    SetObjectProperty(@cObj, "Property", "SubscriberKey")
-                    SetObjectProperty(@cObj, "SimpleOperator", "equals")
-                    AddObjectArrayItem(@cObj, "Value",@SubscriberKey)
-                    SetObjectProperty(@rrObj, "Filter", @cObj)
-                    SET @ResultSet = InvokeRetrieve(@rrObj)
-
-                    IF Rowcount(@ResultSet) == 1 THEN
-                        SET @row = ROW(@ResultSet,1)
-                        IF Field(@row,"Status") != @Status THEN
-                            SET @sub = CreateObject("Subscriber")
-                            SetObjectProperty(@sub,"EmailAddress", @EmailAddress)
-                            SetObjectProperty(@sub,"SubscriberKey", @SubscriberKey)
-                            SetObjectProperty(@sub,"Status",@Status)
-                            SET @options = CreateObject("UpdateOptions")
-                            SET @save = CreateObject("SaveOption")
-                            SetObjectProperty(@save,"SaveAction","UpdateAdd")
-                            SetObjectProperty(@save,"PropertyName","*")
-                            AddObjectArrayItem(@options,"SaveOptions", @save)
-                            SET @update_sub = InvokeUpdate(@sub, @update_sub_status, @update_sub_errorcode, @options)
-                        ENDIF
+                        SET @CashBack = Field(@row, "CashBack")
+                        SET @Savings = Field(@row, "Savings")
+                        SET @Investments = Field(@row, "Investments")
+                        SET @Retirement = Field(@row, "Retirement")
+                    ELSE
+                        SET @Error = true
                     ENDIF
-
+                ELSE
+                    SET @Error = true
                 ENDIF
 
-   ]%%
+            ENDIF
+        ]%%
         </div>
         <div class="header" style="padding-top: 20px;">
             <div class="slds-container_large slds-container--center slds-grid slds-wrap slds-grid_vertical-align-center">
@@ -1184,24 +1158,218 @@
                     An error has occurred when updating your preferences, please contact Cumulus customer support to complete your request.
                 </p>
             </div>
+
             %%[
                 ELSE
             ]%%
-         <div class="pref-block-noborder form-wrapper-noborder">
-             <p class="slds-text-heading_small" style="font-size: 1.45rem">
-                 Your preferences have been updated.  To modify your preferences, click the URL below to return to view your Preferences.
-             </p>
+
+            <div class="pref-block-noborder form-wrapper-noborder">
+                <p class="slds-text-heading_small" style="font-size: 1.45rem">
+                    Please take a moment to update your preferences to ensure that you receive content from Cumulus that's interesting and relevant to you.
+                </p>
             </div>
-         <form id="mainFormBody" action="%%=v(@preferenceCenterLink)=%%" method="post" enctype="application/x-www-form-urlencoded">
-             <div style="text-align: center; margin-bottom: 30px;">
-                 <button class="form-button" id="submitBtn" type="submit">Preference Center</button>
+            <form id="mainFormBody" name="mainFormBody" action="%%=v(@thankYouLink)=%%" method="post">
+                <div class="form-wrapper pref-block">
+                    <div class="slds-p-horizontal_x-large slds-p-vertical_medium">
+                        <div class="slds-grid slds-wrap">
+                            <div class="pref_type_icon mobile-hidden">
+                                <img src="https://s3.amazonaws.com/demo-builder/cloud-pages/prefpage_person_icon-light.png"></div>
+                            <div class="slds-col slds-p-horizontal_x-large slds-p-vertical_small">
+                                <div class="slds-text-heading_medium">
+                                    Personal Details</div>
+                                <div class="slds-grid slds-wrap slds-p-vertical_small form-row">
+                                    <div class="slds-size_1-of-1 slds-medium-size_1-of-5 slds-text-heading_small slds-p-top_x-small mobile-hidden">
+                                        Your Name:</div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_2-of-5">
+                                        <label class="slds-form-element__label mobile-show" for="FirstName">First Name</label>
+                                        <div class="formfield-input">
+                                            <input class="slds-input" id="FirstName" name="FirstName" placeholder="First Name" type="text" value="%%=v(@FirstName)=%%"></div>
+                                    </div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_2-of-5">
+                                        <label class="slds-form-element__label mobile-show" for="LastName">Last Name</label>
+                                        <div class="formfield-input">
+                                            <input class="slds-input" id="LastName" name="LastName" placeholder="Last Name" type="text" value="%%=v(@LastName)=%%"></div>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-wrap slds-p-vertical_small form-row">
+                                    <div class="slds-size_1-of-1 slds-medium-size_1-of-5 slds-text-heading_small slds-p-top_x-small mobile-hidden">
+                                        Email Address:</div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_4-of-5">
+                                        <label class="slds-form-element__label mobile-show" for="EmailAddress">Email Address</label>
+                                        <div class="formfield-input">
+                                            <input class="slds-input" id="EmailAddress" name="EmailAddress" placeholder="example@website.com" type="text" value="%%=v(@EmailAddress)=%%" readonly="readonly"></div>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-wrap slds-p-vertical_small form-row">
+                                    <div class="slds-size_1-of-1 slds-medium-size_1-of-5 slds-text-heading_small slds-p-top_x-small mobile-hidden">
+                                        Phone Number:</div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_2-of-5">
+                                        <label class="slds-form-element__label mobile-show" for="PhoneNumber">Phone Number</label>
+                                        <div class="formfield-input">
+                                            <input class="slds-input" id="PhoneNumber" name="PhoneNumber" placeholder="Phone Number" type="text" value="%%=v(@PhoneNumber)=%%"></div>
+                                    </div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_2-of-5">
+                                        <div class="slds-select_container">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-wrap slds-p-vertical_small form-row">
+                                    <div class="slds-size_1-of-1 slds-medium-size_1-of-5 slds-text-heading_small slds-p-top_x-small mobile-hidden">
+                                        Mailing Address:</div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_4-of-5">
+                                        <label class="slds-form-element__label mobile-show" for="StreetAddress">Street Address</label>
+                                        <div class="formfield-input">
+                                            <input class="slds-input" id="StreetAddress" name="StreetAddress" placeholder="Street Address" type="text" value="%%=v(@StreetAddress)=%%"></div>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-wrap slds-p-vertical_small form-row">
+                                    <div class="slds-size_1-of-1 slds-medium-size_1-of-5 slds-text-heading_small slds-p-top_x-small mobile-hidden">
+                                    </div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_2-of-5">
+                                        <label class="slds-form-element__label mobile-show" for="City">City</label>
+                                        <div class="formfield-input">
+                                            <input class="slds-input" id="City" name="City" placeholder="City" type="text" value="%%=v(@City)=%%"></div>
+                                    </div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_2-of-5">
+                                        <div class="slds-grid slds-wrap">
+                                            <div class="slds-size_1-of-3">
+                                                <label class="slds-form-element__label mobile-show" for="State">State</label>
+                                                <div class="formfield-input">
+                                                    <input class="slds-input" id="State" name="State" placeholder="State" type="text" value="%%=v(@State)=%%"></div>
+                                            </div>
+                                            <div class="slds-size_2-of-3">
+                                                <label class="slds-form-element__label mobile-show" for="ZipCode">Zip Code</label>
+                                                <div class="formfield-input">
+                                                    <input class="slds-input" id="ZipCode" name="ZipCode" placeholder="Zip Code" type="text" value="%%=v(@ZipCode)=%%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-         </form>
+                <div class="form-wrapper pref-block" id="communication-details">
+                    <div class="slds-p-horizontal_x-large slds-p-vertical_medium">
+                        <div class="slds-grid slds-wrap">
+                            <div class="pref_type_icon mobile-hidden">
+                                <img src="https://s3.amazonaws.com/demo-builder/cloud-pages/prefpage_communication_icon-light.png"></div>
+                            <div class="slds-col slds-p-horizontal_medium slds-p-vertical_small">
+                                <div class="slds-wrap slds-grid">
+                                    <div class="slds-size_3-of-4 slds-medium-size_3-of-4 slds-text-heading_medium">
+                                        Communication Details</div>
+                                    <div class="slds-size_1-of-4 slds-medium-size_1-of-4">
+                                        <div class="slds-grid comm-type-cat">
+                                            <div class="slds-size_1-of-2 slds-medium-size_1-of-2 slds-text-heading_small slds-p-right_small">
+                                                <span class="mobile-hidden">Email</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-wrap slds-grid slds-p-vertical_small">
+                                    <div class="slds-size_3-of-4 slds-medium-size_3-of-4 ">
+                                        Weekly news, including new features and the latest investment opportunities.</div>
+                                    <div class="slds-size_1-of-4 slds-medium-size_1-of-4">
+                                        <div class="slds-grid comm-type-cat">
+                                            <div class="slds-size_1-of-2 slds-medium-size_1-of-2 slds-p-right_small">
+                                                <span class="slds-checkbox"><input id="WeeklyNews" name="WeeklyNews" type="checkbox" value="on" %%[ IF @WeeklyNews==true THEN ]%%checked="checked" %%[ ENDIF ]%%></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-wrap slds-grid slds-p-vertical_small">
+                                    <div class="slds-size_3-of-4 slds-medium-size_3-of-4">
+                                        Quarterly investment recommendations and personalized offers.</div>
+                                    <div class="slds-size_1-of-4 slds-medium-size_1-of-4">
+                                        <div class="slds-grid comm-type-cat">
+                                            <div class="slds-size_1-of-2 slds-medium-size_1-of-2 slds-p-right_small">
+                                                <span class="slds-checkbox"><input id="InvestmentRecs" name="InvestmentRecs" type="checkbox" value="on" %%[ IF @InvestmentRecs==true THEN ]%%checked="checked" %%[ ENDIF ]%%></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-wrapper pref-block">
+                    <div class="slds-p-horizontal_x-large slds-p-vertical_medium">
+                        <div class="slds-grid slds-wrap">
+                            <div class="pref_type_icon mobile-hidden">
+                                <img src="https://s3.amazonaws.com/demo-builder/cloud-pages/prefpage_interests_icon-light.png"></div>
+                            <div class="slds-col slds-p-horizontal_medium slds-p-vertical_small">
+                                <div class="slds-text-heading_medium">
+                                    Your Interests</div>
+                                <div class="slds-grid slds-wrap slds-p-vertical_small">
+                                    <div class="slds-p-top_x-small">
+                                        Let us know what you're interested in and we'll send you monthly recommendations you'll love! Select all that apply:</div>
+                                </div>
+                                <div class="slds-grid slds-wrap slds-p-vertical_small">
+                                    <div class="slds-form-element">
+                                        <span class="slds-select-element"><input id="CashBack" name="CashBack" type="checkbox" value="on" %%[ IF @CashBack==true THEN ]%%checked="" %%[ ENDIF ]%%> <label class="slds-checkbox__label" for="CashBack"><span class="slds-select-element__label">Cash Back</span></label></span></div>
+                                    <div class="slds-form-element">
+                                        <span class="slds-select-element"><input id="Savings" name="Savings" type="checkbox" value="on" %%[ IF @Savings==true THEN ]%%checked="" %%[ ENDIF ]%%> <label class="slds-checkbox__label" for="Savings"><span class="slds-select-element__label">Savings</span></label></span></div>
+                                    <div class="slds-form-element">
+                                        <span class="slds-select-element"><input id="Investments" name="Investments" type="checkbox" value="on" %%[ IF @Investments==true THEN ]%%checked="" %%[ ENDIF ]%%> <label class="slds-checkbox__label" for="Investments"><span class="slds-select-element__label">Investment</span></label></span></div>
+                                    <div class="slds-form-element">
+                                        <span class="slds-select-element"><input id="Retirement" name="Retirement" type="checkbox" value="on" %%[ IF @Retirement==true THEN ]%%checked="" %%[ ENDIF ]%%> <label class="slds-checkbox__label" for="Retirement"><span class="slds-select-element__label">Retirement</span></label></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="form-button" id="submitBtn" type="submit">Update Preferences</button>
+                </div>
+            </form>
+            <form id="unsubscribe" action="%%=v(@unsubAll)=%%" method="post">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="form-button" id="unsuball" name="unsuball" type="submit" value="true" style="background-color: #307FCE">Unsubscribe from All</button>
+                </div>
+            </form>
             %%[
                 ENDIF
             ]%%
         </div>
 
+        <script>
+        // var button = $('#submitBtn');
+        // var orig = [];
+
+        // $.fn.getType = function() {
+        //     return this[0].tagName == "INPUT" ? $(this[0]).attr("type").toLowerCase() : this[0].tagName.toLowerCase();
+        // }
+
+        // $("#mainFormBody :input").each(function() {
+        //     var type = $(this).getType();
+        //     var tmp = {
+        //         'type': type,
+        //         'value': $(this).val()
+        //     };
+        //     if (type == 'radio') {
+        //         tmp.checked = $(this).is(':checked');
+        //     }
+        //     orig[$(this).attr('id')] = tmp;
+        // });
+
+        // $('#mainFormBody').bind('change keyup', function() {
+
+        //     var disable = true;
+        //     $("form :input").each(function() {
+        //         var type = $(this).getType();
+        //         var id = $(this).attr('id');
+
+        //         if (type == 'text' || type == 'select') {
+        //             disable = (orig[id].value == $(this).val());
+        //         } else if (type == 'radio') {
+        //             disable = (orig[id].checked == $(this).is(':checked'));
+        //         }
+
+        //         if (!disable) {
+        //             return false; // break out of loop
+        //         }
+        //     });
+
+        //     button.prop('disabled', disable);
+        // });
+        </script>
     </body>
 
 </html>
