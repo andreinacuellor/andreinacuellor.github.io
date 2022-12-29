@@ -1083,6 +1083,10 @@
     </head>
 
     <body>
+        <script runat="server">
+        Platform.Load("Core","1.1.1");
+        try{
+        </script>
         <div style="display:none;">
         %%[
             /*
@@ -1141,6 +1145,11 @@
             ENDIF
         ]%%
         </div>
+        <script runat="server">
+        }catch(e){
+         Write(Stringify(e));
+        }
+        </script>
         <div class="header" style="padding-top: 20px;">
             <div class="slds-container_large slds-container--center slds-grid slds-wrap slds-grid_vertical-align-center">
                 <div class="slds-size_1-of-1 slds-medium-size_1-of-2">
