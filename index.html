@@ -1,32 +1,24 @@
-<head></head>
-<body>
-<div style="display:none;"> 
-  %%[
-    SET @SubscriberKey = [_subscriberkey]
-  ]%%
-</div>
-<div class="pref-block-noborder form-wrapper-noborder"> 
-  <form id="mainFormBody" name="mainFormBody" action="" method="post">
-                <div class="form-wrapper pref-block">
-                    <div class="slds-p-horizontal_x-large slds-p-vertical_medium">
-                        <div class="slds-grid slds-wrap">
-                            <div class="pref_type_icon mobile-hidden">
-                                <img src="https://s3.amazonaws.com/demo-builder/cloud-pages/prefpage_person_icon-light.png"></div>
-                            <div class="slds-col slds-p-horizontal_x-large slds-p-vertical_small">
-                                <div class="slds-text-heading_medium">
-                                    Personal Details</div>
-                                <div class="slds-grid slds-wrap slds-p-vertical_small form-row">
-                                    <div class="slds-size_1-of-1 slds-medium-size_1-of-5 slds-text-heading_small slds-p-top_x-small mobile-hidden">
-                                        Your Name:</div>
-                                    <div class="slds-size_1-of-1 slds-medium-size_2-of-5">
-                                        <label class="slds-form-element__label mobile-show" for="FirstName">First Name</label>
-                                        <div class="formfield-input">
-                                            <input class="slds-input" id="FirstName" name="FirstName" placeholder="First Name" type="text" value="%%=v(@SubscriberKey)=%%"></div>
-                                    </div>
-                                </div>
-                             </div>
-                       </div>
-                    </div>
-                </div>
-</div>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <script src="https://morgana2022--acceptance.sandbox.my.site.com/lightning/lightning.out.js"></script> 
+    <script>
+        $Lightning.use("runtime_appointmentbooking:lightningOutGuest",
+            function() {                  // Callback once framework and app load
+                $Lightning.createComponent(
+                    "lightning:flow",    // top-level component of your app
+                    { },    // attributes to set on the component when created
+                    "lexcontainer",    // the DOM location to insert the component
+                    function(component) {            // API name of the Flow
+                        component.startFlow("Inbound_New_Guest_Appointment_custom");
+                    }
+                );
+            },    'https://morgana2022--acceptance.sandbox.my.site.com'  // Site endpoint
+        );
+    </script>
+  </body>
+</html>
