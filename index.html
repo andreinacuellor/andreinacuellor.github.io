@@ -23,6 +23,7 @@
                     { },    // attributes to set on the component when created
                     "lexcontainer",    // the DOM location to insert the component
                     function(component) {            // API name of the Flow
+                        console.log('Hi from callback');
                         component.startFlow("Inbound_New_Guest_Appointment_custom");
                     }
                 );
