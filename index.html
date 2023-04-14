@@ -1,37 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <script src="https://morgana2022--acceptance.sandbox.my.site.com/lightning/lightning.out.js"></script>
-    <meta charset="utf-8" />
-    <style>
-          .slds-visual-picker_vertical .slds-visual-picker__figure {
-              height: inherit !important;
-          }
-
-          .runtime_appointmentbookingFlowLocation .slds-visual-picker_vertical {
-              display: inline-flex !important;
-          }
-    </style>
-  </head>
-  <body>
-    <script>
-        $Lightning.use("runtime_appointmentbooking:lightningOutGuest",
-            function() {                  // Callback once framework and app load
-                $Lightning.createComponent(
-                    "lightning:flow",    // top-level component of your app
-                    { },    // attributes to set on the component when created
-                    "lexcontainer",    // the DOM location to insert the component
-                    function(component) {            // API name of the Flow
-                        console.log('Hi from callback');
-                        component.startFlow('Inbound_New_Guest_Appointment_custom');
-                    }
-                );
-            },    "https://morgana2022--acceptance.sandbox.my.site.com"  // Site endpoint
-        );
-    </script>
-    
-    <div id="lexcontainer">
-      <p>Lightning Component mentioned in the Script is invoked from here</p>
-    </div>
-  </body>
+<html>
+    <head>
+        <title>Hello, World!</title>
+    </head>
+    <body>
+        <p>Hello, World!</p>
+    </body>
 </html>
